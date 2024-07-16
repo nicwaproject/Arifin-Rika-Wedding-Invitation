@@ -7,11 +7,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Set couple names from URL parameter or use default
     const coupleNames = getQueryParameter('couple');
-    document.getElementById('coupleNames').textContent = coupleNames || 'Arifin & Rika'; // Default names
+    const coupleNamesElement = document.getElementById('coupleNames');
+    if (coupleNamesElement) {
+        coupleNamesElement.textContent = coupleNames || 'Arifin & Rika'; // Default names
+    }
 
     // Set guest name from URL parameter or use default
     const guestName = getQueryParameter('guest');
-    document.getElementById('guestName').textContent = guestName || 'Guest';
+    const guestNameElement = document.getElementById('guestName');
+    if (guestNameElement) {
+        guestNameElement.textContent = guestName || 'Guest';
+    }
 
     // Variables for the invitation and music
     const openButton = document.getElementById('openButton');
@@ -23,26 +29,34 @@ document.addEventListener("DOMContentLoaded", function() {
     let isPlaying = false;
 
     // Event listener to open the invitation and start music
-    openButton.addEventListener('click', function() {
-        invitationCover.style.display = 'none';
-        invitationContent.style.display = 'flex';
-        audioControls.style.display = 'block'; // Show the audio controls
-        togglePlayPause();
-    });
+    if (openButton) {
+        openButton.addEventListener('click', function() {
+            if (invitationCover) invitationCover.style.display = 'none';
+            if (invitationContent) invitationContent.style.display = 'flex';
+            if (audioControls) audioControls.style.display = 'block'; // Show the audio controls
+            togglePlayPause();
+        });
+    }
 
     // Function to toggle play/pause for the music
     function togglePlayPause() {
-        if (isPlaying) {
-            backgroundMusic.pause();
-        } else {
-            backgroundMusic.play();
+        if (backgroundMusic) {
+            if (isPlaying) {
+                backgroundMusic.pause();
+            } else {
+                backgroundMusic.play();
+            }
+            isPlaying = !isPlaying;
+            if (playPauseButton) {
+                playPauseButton.src = isPlaying ? 'pause.png' : 'play-button.png'; // Change this to the path of your play and pause button images
+            }
         }
-        isPlaying = !isPlaying;
-        playPauseButton.src = isPlaying ? 'pause.png' : 'play-button.png'; // Change this to the path of your play and pause button images
     }
 
     // Event listener for the play/pause button
-    playPauseButton.addEventListener('click', togglePlayPause);
+    if (playPauseButton) {
+        playPauseButton.addEventListener('click', togglePlayPause);
+    }
 
     // Countdown Timer
     function calculateCountdown() {
@@ -66,26 +80,10 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('seconds').textContent = seconds;
     }
 
-    setInterval(calculateCountdown, 1000);
+    const intervalId = setInterval(calculateCountdown, 1000);
     calculateCountdown();
 
-// Function to copy account details
-// function copyAccountDetails() {
-//     const accountDetails = document.querySelector('.bank-number').innerText;
-//     navigator.clipboard.writeText(accountDetails)
-//         .then(() => {
-//             alert('Account details copied!');
-//         })
-//         .catch(err => {
-//             console.error('Failed to copy: ', err);
-//         });
-// }
-
-// Attach event listener to the copy button
-// const copyButton = document.getElementById('copyButton');
-// copyButton.addEventListener('click', copyAccountDetails);
-
-    // function to show animation 
+    // Function to show animation
     const observerOptions = {
         root: null,
         rootMargin: '0px',
@@ -106,70 +104,70 @@ document.addEventListener("DOMContentLoaded", function() {
     elements.forEach(element => {
         observer.observe(element);
     });
+
+    // Function to handle message form submission
+    const messageForm = document.getElementById('messageForm');
+    if (messageForm) {
+        messageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('formGuestName').value;
+            const message = document.getElementById('guestMessage').value;
+
+            fetch('https://arifin-rika.glitch.me/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadMessages();
+                messageForm.reset();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
+
+    // Function to load messages
+    function loadMessages() {
+        fetch('https://arifin-rika.glitch.me/messages')
+            .then(response => response.json())
+            .then(data => {
+                const messageList = document.getElementById('messageList');
+                if (messageList) {
+                    messageList.innerHTML = '';
+                    data.forEach(msg => {
+                        const messageItem = document.createElement('div');
+                        messageItem.classList.add('message'); // Add 'message' class
+
+                        // Element for the author
+                        const authorElement = document.createElement('div');
+                        authorElement.classList.add('message-author');
+                        authorElement.textContent = msg.name;
+
+                        // Element for the content
+                        const contentElement = document.createElement('div');
+                        contentElement.classList.add('message-content');
+                        contentElement.textContent = msg.message;
+
+                        // Element to contain both the author and the content
+                        const bodyElement = document.createElement('div');
+                        bodyElement.classList.add('message-body');
+                        bodyElement.appendChild(authorElement);
+                        bodyElement.appendChild(contentElement);
+
+                        // Append the bodyElement to the messageItem
+                        messageItem.appendChild(bodyElement);
+
+                        // Append the messageItem to the messageList
+                        messageList.appendChild(messageItem);
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    window.onload = loadMessages;
 });
-
-
-// function to handle message
-
-document.getElementById('messageForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const name = document.getElementById('formGuestName').value;
-    const message = document.getElementById('guestMessage').value;
-
-    fetch('https://arifin-rika.glitch.me/messages', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, message })
-    })
-    .then(response => response.json())
-    .then(data => {
-        loadMessages();
-        document.getElementById('messageForm').reset();
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-function loadMessages() {
-    fetch('https://arifin-rika.glitch.me/messages')
-        .then(response => response.json())
-        .then(data => {
-            const messageList = document.getElementById('messageList');
-            messageList.innerHTML = '';
-            data.forEach(msg => {
-                const messageItem = document.createElement('div');
-                messageItem.classList.add('message'); // Tambahkan kelas 'message' di sini
-
-                // Element untuk nama pengguna (author)
-                const authorElement = document.createElement('div');
-                authorElement.classList.add('message-author');
-                authorElement.textContent = msg.name;
-
-                // Element untuk isi pesan
-                const contentElement = document.createElement('div');
-                contentElement.classList.add('message-content');
-                contentElement.textContent = msg.message;
-
-                // Element untuk memuat nama pengguna dan isi pesan
-                const bodyElement = document.createElement('div');
-                bodyElement.classList.add('message-body');
-                bodyElement.appendChild(authorElement);
-                bodyElement.appendChild(contentElement);
-
-                // Menggabungkan bodyElement ke dalam messageItem
-                messageItem.appendChild(bodyElement);
-
-                // Menambahkan messageItem ke dalam messageList
-                messageList.appendChild(messageItem);
-            });
-        })
-        .catch(error => console.error('Error:', error));
-}
-
-window.onload = loadMessages;
-
-}
-
-window.onload = loadMessages;
