@@ -140,11 +140,36 @@ function loadMessages() {
             messageList.innerHTML = '';
             data.forEach(msg => {
                 const messageItem = document.createElement('div');
-                messageItem.textContent = `${msg.name}: ${msg.message}`;
+                messageItem.classList.add('message'); // Tambahkan kelas 'message' di sini
+
+                // Element untuk nama pengguna (author)
+                const authorElement = document.createElement('div');
+                authorElement.classList.add('message-author');
+                authorElement.textContent = msg.name;
+
+                // Element untuk isi pesan
+                const contentElement = document.createElement('div');
+                contentElement.classList.add('message-content');
+                contentElement.textContent = msg.message;
+
+                // Element untuk memuat nama pengguna dan isi pesan
+                const bodyElement = document.createElement('div');
+                bodyElement.classList.add('message-body');
+                bodyElement.appendChild(authorElement);
+                bodyElement.appendChild(contentElement);
+
+                // Menggabungkan bodyElement ke dalam messageItem
+                messageItem.appendChild(bodyElement);
+
+                // Menambahkan messageItem ke dalam messageList
                 messageList.appendChild(messageItem);
             });
         })
         .catch(error => console.error('Error:', error));
+}
+
+window.onload = loadMessages;
+
 }
 
 window.onload = loadMessages;
