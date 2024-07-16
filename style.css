@@ -400,7 +400,7 @@ body {
 
 /* ...........SECTION 8............. */
 #section8 {
-    background-image: url('gallery3.jpg'); /* Mobile background image */
+    background-image: url('gallery1.jpg'); /* Mobile background image */
     background-size: cover;
     background-position: center;
     text-align: center;
@@ -428,7 +428,7 @@ body {
 .thank-you {
     max-width: 600px;
     margin: 0 auto;
-    line-height:0.5;
+    line-height:1;
 }
 
 /* ...........SECTION 9............. */
@@ -607,7 +607,7 @@ button:hover {
     }
     /* SECTION8 */
     #section8 {
-        background-image: url('gallery2.jpg'); /* Desktop background image */
+        background-image: url('gallery3.jpg'); /* Desktop background image */
     }
     .thank-you {
         max-width: auto;
